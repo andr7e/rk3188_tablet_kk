@@ -57,6 +57,10 @@
 #include <linux/mfd/rk610_core.h>
 #endif
 
+#if defined(CONFIG_MFD_RK616)
+#include <linux/mfd/rk616.h>
+#endif
+
 #if defined(CONFIG_RK_HDMI)
 	#include "../../../drivers/video/rockchip/hdmi/rk_hdmi.h"
 #endif
@@ -87,13 +91,28 @@ static struct rk29_keys_button key_button[] = {
 		.wakeup	= 1,
 	},
 	{
-		.desc	= "esc",
-		.code	= KEY_BACK,
+		.desc	= "vol+",
+		.code	= KEY_VOLUMEUP,
 		.adc_value	= 1,
 		.gpio = INVALID_GPIO,
 		.active_low = PRESS_LEV_LOW,
 	},
+	{
+		.desc	= "vol-",
+		.code	= KEY_VOLUMEDOWN,
+		.adc_value	= 180,
+		.gpio = INVALID_GPIO,
+		.active_low = PRESS_LEV_LOW,
+	},
+	{
+		.desc	= "esc",
+		.code	= KEY_BACK,
+		.adc_value	= 510,
+		.gpio = INVALID_GPIO,
+		.active_low = PRESS_LEV_LOW,
+	},
 };
+
 struct rk29_keys_platform_data rk29_keys_pdata = {
 	.buttons	= key_button,
 	.nbuttons	= ARRAY_SIZE(key_button),
