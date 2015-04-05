@@ -1054,7 +1054,8 @@ static int goodix_ts_probe(struct i2c_client *client, const struct i2c_device_id
         GTP_ERROR("I2C communication ERROR!");
         return -ENODEV;
     }
-    ctp_register("gt9xx");
+    
+    //ctp_register("gt9xx");
 
 #if GTP_AUTO_UPDATE
     ret = gup_init_update_proc(ts);
@@ -1310,9 +1311,6 @@ static int __devinit goodix_ts_init(void)
 {
     s32 ret;
 
-    if(!ctp_supported("gt9xx")) {
-        return -ENODEV;
-    }
     GTP_DEBUG_FUNC();	
     GTP_INFO("GTP driver install.");
     goodix_wq = create_singlethread_workqueue("goodix_wq");

@@ -135,6 +135,18 @@ int get_harware_version()
 }
 EXPORT_SYMBOL_GPL(get_harware_version);
 
+#if defined(CONFIG_TOUCHSCREEN_GT9XX)
+#define TOUCH_RESET_PIN    RK30_PIN0_PB6
+#define TOUCH_INT_PIN      RK30_PIN1_PB7
+#define TOUCH_PWR_PIN      INVALID_GPIO
+
+struct goodix_platform_data goodix_info = {
+	//.model  = 8105,
+	.irq_pin  = TOUCH_INT_PIN,
+	.rest_pin = TOUCH_RESET_PIN,
+};
+#endif
+
 #if defined(CONFIG_CT36X_TS)
 
 #define TOUCH_MODEL		363
@@ -1838,6 +1850,15 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 		.addr          = 0x01,
 		.flags         = 0,
 		.platform_data = &ct36x_info,
+	},
+#endif
+#if defined (CONFIG_TOUCHSCREEN_GT9XX)
+	{
+		.type          = "Goodix-TS",
+		.addr          = 0x5d,
+		.flags         = 0,
+		.irq           = TOUCH_INT_PIN,
+		.platform_data = &goodix_info,
 	},
 #endif
 #if defined (CONFIG_LS_CM3217)
