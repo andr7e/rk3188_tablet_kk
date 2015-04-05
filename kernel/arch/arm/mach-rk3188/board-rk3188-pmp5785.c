@@ -252,10 +252,10 @@ static int rk29_backlight_pwm_resume(void)
 }
 
 static struct rk29_bl_info rk29_bl_info = {
-        .min_brightness = 65,
-        .max_brightness = 150,
-        .brightness_mode =BRIGHTNESS_MODE_CONIC,
-	.pre_div = 30 * 1000,  // pwm output clk: 30k;
+    .min_brightness = 65,
+    .max_brightness = 235//150,
+    .brightness_mode = BRIGHTNESS_MODE_LINE, //BRIGHTNESS_MODE_CONIC,
+	.pre_div = 20000, //30 * 1000,  // pwm output clk: 30k;
 	.pwm_id = PWM_ID,
 	.bl_ref = PWM_EFFECT_VALUE,
 	.io_init = rk29_backlight_io_init,
@@ -839,6 +839,7 @@ static struct platform_device device_ssd2828 = {
                 .platform_data = &ssd2828_platdata,
         },
 };
+#endif
 
 /**************************************************************************************************
  * SDMMC devices,  include the module of SD,MMC,and sdio.noted by xbw at 2012-03-05
@@ -1929,14 +1930,6 @@ void  rk30_pwm_resume_voltage_set(void)
 
 #ifdef CONFIG_I2C2_RK30
 static struct i2c_board_info __initdata i2c2_info[] = {
-#if defined (CONFIG_CT36X_TS)
-	{
-		.type	       = CT36X_NAME,
-		.addr          = 0x01,
-		.flags         = 0,
-		.platform_data = &ct36x_info,
-	},
-#endif
 #if defined (CONFIG_TOUCHSCREEN_GT9XX)
 	{
 		.type          = "Goodix-TS",
@@ -1944,6 +1937,14 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 		.flags         = 0,
 		.irq           = TOUCH_INT_PIN,
 		.platform_data = &goodix_info,
+	},
+#endif
+#if defined (CONFIG_CT36X_TS)
+	{
+		.type	       = CT36X_NAME,
+		.addr          = 0x01,
+		.flags         = 0,
+		.platform_data = &ct36x_info,
 	},
 #endif
 #if defined (CONFIG_LS_CM3217)
@@ -2011,6 +2012,15 @@ static struct i2c_board_info __initdata i2c4_info[] = {
 			.platform_data		= &rk610_codec_pdata,			
 		},
 #endif
+#endif
+
+#if defined (CONFIG_MFD_RK616)
+	{
+		.type	       = "rk616",
+		.addr	       = 0x50,
+		.flags	       = 0,
+		.platform_data = &rk616_pdata,
+	},
 #endif
 
 #if defined (CONFIG_SND_SOC_RT5631)
