@@ -28,6 +28,9 @@ config DEFAULT_OUT_HDMI
 config LCD_RK29_A050VL01
 	bool "RGB A050VL01"
 	
+config LCD_YF
+	bool "YF lcd panel"
+	
 endchoice
 
 
