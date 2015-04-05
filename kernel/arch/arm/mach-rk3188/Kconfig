@@ -41,6 +41,9 @@ config MACH_RK3188_LR097
 
 config MACH_RK3188_DS1006H
 	bool "RK3188 ds1006h board"
+	
+config MACH_RK3188_PMP5785
+	bool "RK3188 PMP5785 board"
         
 config MACH_RK3188_FAC
         bool "RK3188 Board for factory"
