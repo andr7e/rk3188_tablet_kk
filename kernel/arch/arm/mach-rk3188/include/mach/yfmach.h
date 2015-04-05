@@ -1,18 +1,19 @@
-
 #ifndef __YF_MACH_H_
 #define __YF_MACH_H_
+
 #include <linux/input.h>
 
 int acc_supported(char * name);
 void acc_register(char * name, int units);
 void acc_report(struct input_dev *input, int x, int y, int z);
 
-int ctp_supported(char * name);
-void ctp_register(char * name);
+//int ctp_supported(char * name);
+//void ctp_register(char * name);
 
 void yf_mux_api_set(unsigned pin, unsigned mode);
 int yf_mux_api_get(int pin);
 
+/*
 void env_fixup(void);
 const char * env_get_str(char * name, const char * def);
 unsigned env_get_len(void * buffer);
@@ -23,6 +24,7 @@ unsigned env_cpy_u32s(char *name, unsigned * buffer, unsigned len);
 int env_enum_u32(char * name,void * param,int (*on_enum)(char *,unsigned *,void *));
 int env_enum_str(char * name,void * param,int (*on_enum)(char *,char *,void *));
 void env_set(void * src, unsigned size);
+*/ 
 
 #define SYS_DATA_MARK 0x10000
 #define SYS_DATA_MASK 0xFFFF
