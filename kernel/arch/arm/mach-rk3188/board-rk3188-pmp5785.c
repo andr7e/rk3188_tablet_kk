@@ -548,6 +548,37 @@ struct rk29fb_info lcdc0_screen_info = {
 #endif
 
 #if defined(CONFIG_LCDC1_RK3188)
+#define LCD_RST_PIN			RK30_PIN0_PA7
+#define MIPI_RST_PIN        RK30_PIN0_PC3
+static int rk29_lcd_io_init(void)
+{
+/*	int ret = gpio_request(LCD_RST_PIN, NULL);
+	if (ret != 0) {
+		gpio_free(LCD_RST_PIN);
+		printk("%s: request LCD_RST_PIN error\n", __func__);
+		return -EIO;
+	}*/
+	gpio_request(MIPI_RST_PIN, NULL);
+	gpio_direction_output(LCD_RST_PIN, 0);
+	msleep(5);
+	gpio_direction_output(LCD_RST_PIN, 1);
+	msleep(5);
+	return 0;
+}
+
+static int rk29_lcd_io_deinit(void)
+{
+//	gpio_free(LCD_RST_PIN);
+	gpio_free(MIPI_RST_PIN);
+	return 0;
+}
+
+static struct rk29lcd_info rk29_lcd_info = {
+    .reset_pin = MIPI_RST_PIN,
+    .io_init   = rk29_lcd_io_init,
+    .io_deinit = rk29_lcd_io_deinit,
+};
+
 struct rk29fb_info lcdc1_screen_info = {
 	.prop	   = PRMRY,		//primary display device
 	.io_init   = rk_fb_io_init,
@@ -692,6 +723,20 @@ static struct rk610_ctl_platform_data rk610_ctl_pdata = {
 };
 #endif
 
+#if defined(CONFIG_MFD_RK616)
+#define RK616_SCL_RATE			(100*1000)   //i2c scl rate
+static struct rk616_platform_data rk616_pdata = {
+	.power_init = rk610_power_on_init,
+	.scl_rate   = RK616_SCL_RATE,
+	.lcd0_func = INPUT,             //port lcd0 as input
+	.lcd1_func = INPUT,             //port lcd1 as input
+	.lvds_ch_nr = 1,		//the number of used lvds channel
+	.hdmi_irq = INVALID_GPIO,
+	.spk_ctl_gpio = RK30_PIN2_PD7,
+	.hp_ctl_gpio = RK30_PIN2_PD7,
+};
+#endif
+
 #ifdef CONFIG_SND_SOC_RK610
 static int rk610_codec_io_init(void)
 {
@@ -754,6 +799,46 @@ static struct platform_device device_ion = {
 	},
 };
 #endif
+
+
+#ifdef CONFIG_SSD2828_RGB2MIPI
+#include "../../../drivers/video/rockchip/transmitter/mipi_dsi.h"
+
+struct ssd2828_t ssd2828_platdata = {
+	.id = 0x2828,
+	.reset = {
+		.reset_pin = RK30_PIN0_PA7,
+		.effect_value = GPIO_LOW,
+	},
+	.vddio = {
+		.enable_pin = RK30_PIN0_PB0,
+		.effect_value = GPIO_LOW,
+	},
+
+	.vdd_mipi = {
+		.enable_pin = INVALID_GPIO,
+		.effect_value = GPIO_LOW,
+	},
+	.shut = {                     //SHUT PIN
+		.enable_pin = RK30_PIN3_PD4,
+		.effect_value = GPIO_LOW,
+	},
+	.spi = {
+		.cs = RK30_PIN0_PD7,
+		.sck = RK30_PIN0_PD6,
+		.miso = RK30_PIN0_PD4,
+		.mosi = RK30_PIN0_PD5,
+	},
+};
+
+//board
+static struct platform_device device_ssd2828 = {
+        .name   = "ssd2828",
+        .id     = -1,
+        .dev = {
+                .platform_data = &ssd2828_platdata,
+        },
+};
 
 /**************************************************************************************************
  * SDMMC devices,  include the module of SD,MMC,and sdio.noted by xbw at 2012-03-05
@@ -2022,8 +2107,17 @@ static void __init machine_rk30_board_init(void)
 	
 	pm_power_off = rk30_pm_power_off;
 	
-        gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
+    gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
+    
+#if defined(CONFIG_MFD_RK616)
+	rk616_pdata.spk_ctl_gpio = RK30_PIN2_PD7;
+	rk616_pdata.hp_ctl_gpio  = RK30_PIN2_PD7;
+#endif
 
+#ifdef CONFIG_SSD2828_RGB2MIPI
+	lcdc1_screen_info.lcd_info = &rk29_lcd_info;
+	platform_device_register(&device_ssd2828);
+#endif
 
 	rk30_i2c_register_board_info();
 	spi_register_board_info(board_spi_devices, ARRAY_SIZE(board_spi_devices));
