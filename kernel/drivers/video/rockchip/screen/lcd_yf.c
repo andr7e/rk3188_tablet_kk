@@ -9,23 +9,23 @@
 extern int lcd_supported(char * name);
 
 #define OUT_TYPE        SCREEN_RGB
-#define OUT_FACE        OUT_P888
+#define OUT_FACE        OUT_D888_P666 //OUT_P888
 
-#define OUT_CLK         66666666
-#define LCDC_ACLK       500000000
+#define OUT_CLK         65000000  //66666666
+#define LCDC_ACLK       300000000 //500000000
 /* Timing */
-#define H_PW            32
-#define H_BP            80
-#define H_VD            env_get_u32("lcd_h_vd", 1280)
-#define H_FP            48
+#define H_PW            64 // 32
+#define H_BP            56 // 80
+#define H_VD            768 //env_get_u32("lcd_h_vd", 1280)
+#define H_FP            60
 
-#define V_PW            6
-#define V_BP            14
-#define V_VD            env_get_u32("lcd_v_vd", 800)
-#define V_FP            3
+#define V_PW            50 //6
+#define V_BP            30 //14
+#define V_VD            1024 //env_get_u32("lcd_v_vd", 800)
+#define V_FP            36 //3
 
-#define LCD_WIDTH       320
-#define LCD_HEIGHT      180
+#define LCD_WIDTH       119 //320
+#define LCD_HEIGHT      159 //180
 
 #define DCLK_POL        1
 #define SWAP_RB         0
@@ -160,40 +160,41 @@ int rk_lcd_standby(u8 enable) {
 
 static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 {
-	int rk610 = lcd_supported("rk61x");
+	int rk610   = lcd_supported("rk61x");
 	int ssd2828 = lcd_supported("ssd2828");
+	
 	/* screen type & face */
-	screen->type = env_get_u32("lcd_out_type", rk610 ? SCREEN_LVDS: OUT_TYPE);
-	screen->face = env_get_u32("lcd_out_face", OUT_FACE);
-	screen->lvds_format = env_get_u32("lcd_out_format", LVDS_8BIT_2);
+	screen->type = rk610 ? SCREEN_LVDS: OUT_TYPE;
+	screen->face = OUT_FACE;
+	screen->lvds_format = LVDS_8BIT_2;
 
 	/* Screen size */
 	screen->x_res = H_VD;
 	screen->y_res = V_VD;
 
-	screen->width = env_get_u32("lcd_width", LCD_WIDTH);
-	screen->height = env_get_u32("lcd_height", LCD_HEIGHT);
+	screen->width  = LCD_WIDTH;
+	screen->height = LCD_HEIGHT;
 
 	/* Timing */
-	screen->lcdc_aclk = env_get_u32("lcd_aclk", LCDC_ACLK);
-	screen->pixclock = env_get_u32("lcd_clk", OUT_CLK);
-	screen->left_margin = env_get_u32("lcd_h_bp", H_BP);
-	screen->right_margin = env_get_u32("lcd_h_fp", H_FP);
-	screen->hsync_len = env_get_u32("lcd_h_pw", H_PW);
-	screen->upper_margin = env_get_u32("lcd_v_bp", V_BP);
-	screen->lower_margin = env_get_u32("lcd_v_fp", V_FP);
-	screen->vsync_len = env_get_u32("lcd_v_pw", V_PW);
+	screen->lcdc_aclk = LCDC_ACLK;
+	screen->pixclock  = OUT_CLK;
+	screen->left_margin  = H_BP;
+	screen->right_margin = H_FP;
+	screen->hsync_len    = H_PW;
+	screen->upper_margin = V_BP;
+	screen->lower_margin = V_FP;
+	screen->vsync_len    = V_PW;
 
 	/* Pin polarity */
-	screen->pin_hsync = env_get_u32("lcd_h_pol", 0);
-	screen->pin_vsync = env_get_u32("lcd_v_pol", 0);
-	screen->pin_den = env_get_u32("lcd_den_pol", 0);
-	screen->pin_dclk = env_get_u32("lcd_dclk_pol", DCLK_POL);
+	screen->pin_hsync = 0;
+	screen->pin_vsync = 0;
+	screen->pin_den   = 0;
+	screen->pin_dclk  = DCLK_POL;
 
 	/* Swap rule */
-	screen->swap_rb = env_get_u32("lcd_swap_rb", SWAP_RB);
-	screen->swap_rg = env_get_u32("lcd_swap_rg", 0);
-	screen->swap_gb = env_get_u32("lcd_swap_gb", 0);
+	screen->swap_rb = SWAP_RB;
+	screen->swap_rg = 0;
+	screen->swap_gb = 0;
 	screen->swap_delta = 0;
 	screen->swap_dumy = 0;
 
@@ -221,8 +222,8 @@ static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info
 	}
 #ifdef CONFIG_RK616_MIPI_DSI
 	else if(screen->type == SCREEN_MIPI) {
-		screen->dsi_lane = env_get_u32("lcd_dis_lane", 4);
-		screen->hs_tx_clk = env_get_u32("lcd_hs_tclk", 528*1000000);
+		screen->dsi_lane  = 4;
+		screen->hs_tx_clk = 528*1000000;
 		screen->init = rk_lcd_init;
 		screen->standby = rk_lcd_standby;
 		if(lcd_info)
