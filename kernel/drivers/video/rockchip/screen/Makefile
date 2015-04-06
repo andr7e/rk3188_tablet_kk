@@ -70,6 +70,7 @@ obj-$(CONFIG_LCD_RADXA_LVDS_1024_600) += lcd_radxa_lvds_1024x600.o
 obj-$(CONFIG_HDMI_FB_480P) += lcd_480p.o
 obj-$(CONFIG_HDMI_FB_720P) += lcd_720p.o
 obj-$(CONFIG_HDMI_FB_1080P) += lcd_1080p.o
+obj-$(CONFIG_LCD_YF) += lcd_yf.o
 
 quiet_cmd_gen = GEN     $@
       cmd_gen = cmp -s $< $@ || cp $< $@

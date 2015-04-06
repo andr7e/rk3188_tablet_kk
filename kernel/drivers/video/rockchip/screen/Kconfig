@@ -207,6 +207,9 @@ config HDMI_FB_1080P
 	---help---
 	HDMI framebuffer size and timing as 1920x1080p-60 if you say yes
 
+config LCD_YF
+	bool "YF lcd panel"
+
 endchoice
 
 
