@@ -29,6 +29,8 @@ extern int lcd_supported(char * name);
 
 #define DCLK_POL        1
 #define SWAP_RB         0
+#define SWAP_RG		0
+#define SWAP_GB		0
 
 #ifdef CONFIG_SSD2828_RGB2MIPI
 #define mipi_dsi_init(data) 				dsi_set_regs(data, ARRAY_SIZE(data))
@@ -193,10 +195,10 @@ static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info
 
 	/* Swap rule */
 	screen->swap_rb = SWAP_RB;
-	screen->swap_rg = 0;
-	screen->swap_gb = 0;
+	screen->swap_rg = SWAP_RG;
+	screen->swap_gb = SWAP_GB;
 	screen->swap_delta = 0;
-	screen->swap_dumy = 0;
+	screen->swap_dumy  = 0;
 
 	if(ssd2828) {
 #ifdef CONFIG_SSD2828_RGB2MIPI
