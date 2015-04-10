@@ -651,6 +651,13 @@ Input:
 Output:
 	Executive outcomes.0---succeed.
 *******************************************************/
+int get_ctp_gt9xx_id ()
+{
+	//return env_get_u32("ctp_gt9xx_id", 0);
+	
+	return 0x81;
+}
+
 static s32 gtp_init_panel(struct goodix_ts_data *ts)
 {
     s32 ret = -1;
@@ -675,7 +682,9 @@ static s32 gtp_init_panel(struct goodix_ts_data *ts)
         rd_cfg_buf[GTP_ADDR_LENGTH] &= 0x07;
     }
     GTP_DEBUG("SENSOR ID:%d", rd_cfg_buf[GTP_ADDR_LENGTH]);
-    bid = env_get_u32("ctp_gt9xx_id", 0);
+    
+    bid = get_ctp_gt9xx_id();
+    
     cid = rd_cfg_buf[GTP_ADDR_LENGTH];
     for(i = sizeof(cfg_info_groups)/sizeof(cfg_info_groups[0]); --i; ) {
         if(cfg_info_groups[i][0] == bid && cfg_info_groups[i][1] == cid) break;
