@@ -9,5 +9,10 @@ export LOCALVERSION=+
 
 make rk3188_pmp5785_android-4.4_defconfig
 
-make -j2 Image
+make -j2 zImage
+
+./mkkrnlimg ./arch/arm/boot/zImage kernel.img
+
+zip -r out ./kernel.img
+mv ./out.zip ../kernel3.0.36+KK.zip
 

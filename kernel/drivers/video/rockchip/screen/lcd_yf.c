@@ -3,10 +3,10 @@
 
 #include <linux/delay.h>
 #include <mach/gpio.h>
-#include <mach/yfmach.h>
+//#include <mach/yfmach.h>
 #include "../transmitter/mipi_dsi.h"
 
-extern int lcd_supported(char * name);
+//extern int lcd_supported(char * name);
 
 #define OUT_TYPE        SCREEN_RGB
 #define OUT_FACE        OUT_D888_P666 //OUT_P888
@@ -79,6 +79,8 @@ static unsigned char mipi_set_diaplay_off[] = {0x28};
 
 int lcd_init(void)
 {
+	printk("lcd_init...\n");
+	
 	dsi_probe_current_chip();
 	gpio_direction_output(gLcd_info->reset_pin, 0);
 	msleep(10);
@@ -162,8 +164,8 @@ int rk_lcd_standby(u8 enable) {
 
 static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 {
-	int rk610   = lcd_supported("rk61x");
-	int ssd2828 = lcd_supported("ssd2828");
+	int rk610   = 0; //lcd_supported("rk61x");
+	int ssd2828 = 1; //lcd_supported("ssd2828");
 	
 	/* screen type & face */
 	screen->type = rk610 ? SCREEN_LVDS: OUT_TYPE;

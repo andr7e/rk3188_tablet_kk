@@ -124,7 +124,7 @@ struct rk29_keys_platform_data rk29_keys_pdata = {
      v1.1 :      rk610 lvds + rk610 codec + MT5931_MT6622 + light photoresistor + adc/cw2015
      v1.2 :      lvds       + rt5631      + M500          + us5151              + adc
 */
-#define DS1006H_V1_2_SUPPORT  1
+#define DS1006H_V1_2_SUPPORT  0
 int get_harware_version()
 {
     #if DS1006H_V1_2_SUPPORT
@@ -253,15 +253,15 @@ static int rk29_backlight_pwm_resume(void)
 
 static struct rk29_bl_info rk29_bl_info = {
     .min_brightness = 65,
-    .max_brightness = 235//150,
+    .max_brightness = 235,//150,
     .brightness_mode = BRIGHTNESS_MODE_LINE, //BRIGHTNESS_MODE_CONIC,
 	.pre_div = 20000, //30 * 1000,  // pwm output clk: 30k;
 	.pwm_id = PWM_ID,
 	.bl_ref = PWM_EFFECT_VALUE,
-	.io_init = rk29_backlight_io_init,
+	.io_init   = rk29_backlight_io_init,
 	.io_deinit = rk29_backlight_io_deinit,
 	.pwm_suspend = rk29_backlight_pwm_suspend,
-	.pwm_resume = rk29_backlight_pwm_resume,
+	.pwm_resume  = rk29_backlight_pwm_resume,
 };
 
 static struct platform_device rk29_device_backlight = {
