@@ -1553,8 +1553,8 @@ static struct pmu_info  act8846_dcdc_info[] = {
 	},
 	{
 		.name          = "vdd_core",    //logic
-		.min_uv          = 1000000,
-		.max_uv         = 1000000,
+		.min_uv          = 1200000,
+		.max_uv         = 1200000,
 		#ifdef CONFIG_ACT8846_SUPPORT_RESET
 		.suspend_vol  =  1200000,
 		#else
@@ -1563,8 +1563,8 @@ static struct pmu_info  act8846_dcdc_info[] = {
 	},
 	{
 		.name          = "vdd_cpu",   //arm
-		.min_uv          = 1000000,
-		.max_uv         = 1000000,
+		.min_uv          = 1200000,
+		.max_uv         = 1200000,
 		#ifdef CONFIG_ACT8846_SUPPORT_RESET
 		.suspend_vol  =  1200000,
 		#else
@@ -2232,8 +2232,8 @@ static struct cpufreq_frequency_table dvfs_arm_table_volt_level1[] = {
 };
 // ds1006h 10'
 static struct cpufreq_frequency_table dvfs_arm_table_volt_level2[] = {
-        {.frequency = 312 * 1000,       .index = 900 * 1000},
-        {.frequency = 504 * 1000,       .index = 925 * 1000},
+        {.frequency = 312 * 1000,       .index = 925 * 1000},
+        {.frequency = 504 * 1000,       .index = 950 * 1000},
         {.frequency = 816 * 1000,       .index = 1000 * 1000},
         {.frequency = 1008 * 1000,      .index = 1075 * 1000},
         {.frequency = 1200 * 1000,      .index = 1200 * 1000},
