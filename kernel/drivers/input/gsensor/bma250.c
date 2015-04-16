@@ -28,7 +28,8 @@
 
 #include <mach/system.h>
 #include <mach/hardware.h>
-#include <mach/yfmach.h>
+
+#include <mach/board.h>
 
 //#define BMA250_DEBUG
 
@@ -252,9 +253,6 @@ static void bma250_late_resume(struct early_suspend *h);
  */
 static int gsensor_fetch_sysconfig_para(void)
 {
-	if(!acc_supported(SENSOR_NAME)) {
-		return -1;
-	}
 	twi_id = 0;
 	u_i2c_addr.dirty_addr_buf[0] = BMA250_ADDR;
 	u_i2c_addr.dirty_addr_buf[1] = I2C_CLIENT_END;
@@ -548,20 +546,38 @@ static int bma250_read_accel_xyz(struct i2c_client *client,
 	return comres;
 }
 
+static struct sensor_platform_data bma250_info = {
+	.orientation = {0, 1, 0, 1, 0, 0, 0, 0, -1}
+};
+	
 static void bma250_work_func(struct work_struct *work)
 {
 	struct bma250_data *bma250 = container_of((struct delayed_work *)work,
 			struct bma250_data, work);
 	static struct bma250acc acc;
+	s32	x,y,z;
 	unsigned long delay = msecs_to_jiffies(atomic_read(&bma250->delay));
+	
+	//struct sensor_platform_data *pdata = pdata = (bma250->bma250_client)->dev.platform_data;
+	
+	struct sensor_platform_data *pdata = &bma250_info;
 
 	bma250_read_accel_xyz(bma250->bma250_client, &acc);
-	//input_report_abs(bma250->input, ABS_X, acc.x);
-	//input_report_abs(bma250->input, ABS_Y, acc.y);
-	//input_report_abs(bma250->input, ABS_Z, acc.z);
+	
 	bma_dbg("acc.x %d, acc.y %d, acc.z %d\n", acc.x, acc.y, acc.z);
-	//input_sync(bma250->input);
-	acc_report(bma250->input, acc.x, acc.y, acc.z);
+
+	x = (pdata->orientation[0])*acc.x + (pdata->orientation[1])*acc.y + (pdata->orientation[2])*acc.z;
+	y = (pdata->orientation[3])*acc.x + (pdata->orientation[4])*acc.y + (pdata->orientation[5])*acc.z;
+	z = (pdata->orientation[6])*acc.x + (pdata->orientation[7])*acc.y + (pdata->orientation[8])*acc.z;
+	
+	input_report_abs(bma250->input, ABS_X, x);
+	input_report_abs(bma250->input, ABS_Y, y);
+	input_report_abs(bma250->input, ABS_Z, z);
+	
+	input_sync(bma250->input);
+	
+	//acc_report(bma250->input, acc.x, acc.y, acc.z);
+	
 	mutex_lock(&bma250->value_mutex);
 	bma250->value = acc;
 	mutex_unlock(&bma250->value_mutex);
@@ -865,9 +881,7 @@ static int bma250_probe(struct i2c_client *client,
 	struct bma250_data *data;
 
 	bma_dbg("bma250: probe\n");
-	if(!acc_supported(SENSOR_NAME)) {
-		goto exit;
-	}
+
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		printk(KERN_INFO "i2c_check_functionality error\n");
 		goto exit;
@@ -896,7 +910,7 @@ static int bma250_probe(struct i2c_client *client,
 		err = -1;
 		goto kfree_exit;
 	}
-	acc_register(SENSOR_NAME, 256);
+	//acc_register(SENSOR_NAME, 256);
 	i2c_set_clientdata(client, data);
 	data->bma250_client = client;
 	mutex_init(&data->value_mutex);
