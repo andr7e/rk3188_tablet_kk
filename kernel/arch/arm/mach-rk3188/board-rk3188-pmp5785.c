@@ -180,7 +180,7 @@ static struct spi_board_info board_spi_devices[] = {
 #ifdef CONFIG_BACKLIGHT_RK29_BL
 #define PWM_ID            3
 #define PWM_MODE	  PWM3
-#define PWM_EFFECT_VALUE  1
+#define PWM_EFFECT_VALUE  0
 
 #define LCD_DISP_ON_PIN
 
@@ -1611,8 +1611,8 @@ static  struct pmu_info  act8846_ldo_info[] = {
 	},
 	{
 		.name          = "act_ldo6",   //vcc_jetta
-		.min_uv          = 3300000,
-		.max_uv         = 3300000,
+		.min_uv          = 2800000,
+		.max_uv         = 2800000,
 	},
 	{
 		.name          = "act_ldo7",   //vcc18
