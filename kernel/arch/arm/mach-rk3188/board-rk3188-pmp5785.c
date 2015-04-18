@@ -79,7 +79,8 @@
 #include <linux/gps.h>
 #endif
 
-#include "../mach-rk30/board-rk3168-ds1006h-camera.c"
+//#include "../mach-rk30/board-rk3168-ds1006h-camera.c"
+#include "board-rk3188-pmp5785-camera.c"
 #include <plat/key.h>
 
 static struct rk29_keys_button key_button[] = {
@@ -1573,8 +1574,8 @@ static struct pmu_info  act8846_dcdc_info[] = {
 	},
 	{
 		.name          = "act_dcdc4",   //vccio
-		.min_uv          = 3000000,
-		.max_uv         = 3000000,
+		.min_uv          = 3300000,
+		.max_uv         = 3300000,
 		#ifdef CONFIG_ACT8846_SUPPORT_RESET
 		.suspend_vol  =  3000000,
 		#else
