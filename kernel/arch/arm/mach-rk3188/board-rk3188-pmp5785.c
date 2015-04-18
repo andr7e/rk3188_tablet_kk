@@ -1577,7 +1577,7 @@ static struct pmu_info  act8846_dcdc_info[] = {
 		.min_uv          = 3300000,
 		.max_uv         = 3300000,
 		#ifdef CONFIG_ACT8846_SUPPORT_RESET
-		.suspend_vol  =  3000000,
+		.suspend_vol  =  3300000,
 		#else
 		.suspend_vol  =  2800000,
 		#endif
