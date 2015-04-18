@@ -31,7 +31,7 @@
 
 #include <mach/board.h>
 
-//#define BMA250_DEBUG
+#define BMA250_DEBUG
 
 #ifdef BMA250_DEBUG
 #define bma_dbg(x...)	printk(x)
