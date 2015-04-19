@@ -556,7 +556,12 @@ static void bma250_work_func(struct work_struct *work)
 			struct bma250_data, work);
 	static struct bma250acc acc;
 	s32	x,y,z;
+	
+	bma_dbg("bma250_work_func 1");
+	
 	unsigned long delay = msecs_to_jiffies(atomic_read(&bma250->delay));
+	
+	bma_dbg("bma250_work_func 2");
 	
 	//struct sensor_platform_data *pdata = pdata = (bma250->bma250_client)->dev.platform_data;
 	

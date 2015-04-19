@@ -1483,6 +1483,16 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.platform_data = &lis3dh_info,
 	},
 #endif
+
+#if defined (CONFIG_GS_BMA222)
+	{
+		.type = "bma222",
+		.addr = 0x18,
+		.flags	= 0,
+		.irq	= RK30_PIN3_PD7,
+	},
+#endif
+
 #if defined (CONFIG_COMPASS_AK8963)
 	{
 		.type          = "ak8963",
