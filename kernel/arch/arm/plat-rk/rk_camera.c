@@ -1820,7 +1820,7 @@ int rk_sensor_register(void)
         new_camera[i].dev.device_info.dev.init_name =(const char*)&new_camera[i].dev_name[0];
         new_camera[i].io.dev_name =(const char*)&new_camera[i].dev_name[0];
         
-        printk("new_camera %d is %s has orientation %d ", i, new_camera[i].dev_name, new_camera[i].orientation);
+        printk("new_camera %d is %s has orientation %d addr = %d ", i, new_camera[i].dev_name, new_camera[i].orientation, new_camera[i].dev.i2c_cam_info.addr);
 
         if (new_camera[i].orientation == INVALID_VALUE) {
             if (strstr(new_camera[i].dev_name,"back")) {

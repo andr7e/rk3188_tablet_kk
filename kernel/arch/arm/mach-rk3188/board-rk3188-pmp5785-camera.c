@@ -41,7 +41,7 @@ static struct rkcamera_platform_data new_camera[] = {
                         0,
                         3,
                         0), 
-
+#if 0
     new_camera_device(RK29_CAM_SENSOR_SP2518,
                         back,
                         RK30_PIN3_PB5,
@@ -49,6 +49,25 @@ static struct rkcamera_platform_data new_camera[] = {
                         0,
                         3,
                         0),
+#else
+    new_camera_device_ex(RK29_CAM_SENSOR_SP2518,
+						back,
+						270,
+						INVALID_VALUE,
+						INVALID_VALUE,
+						INVALID_VALUE,
+						INVALID_VALUE,
+						RK30_PIN3_PB5,
+						CONS(RK29_CAM_SENSOR_SP2518,_PWRDN_ACTIVE),
+						false,
+						CONS(RK29_CAM_SENSOR_SP2518,_FULL_RESOLUTION),
+						0,
+						3,
+						100000,
+						CONS(RK29_CAM_SENSOR_SP2518,_I2C_ADDR),
+						0,
+						24),
+#endif
 
     new_camera_device(RK29_CAM_SENSOR_SP0718,
                         back,
@@ -73,7 +92,7 @@ static struct rkcamera_platform_data new_camera[] = {
                         0,
                         3,
                         0),
-
+#if 0
     new_camera_device(RK29_CAM_SENSOR_SP0718,
                         front,
                         RK30_PIN3_PB4,
@@ -81,6 +100,26 @@ static struct rkcamera_platform_data new_camera[] = {
                         0,
                         3,
                         0),
+#else
+    new_camera_device_ex(RK29_CAM_SENSOR_SP0718,
+						front,
+						90,
+						INVALID_VALUE,
+						INVALID_VALUE,
+						INVALID_VALUE,
+						INVALID_VALUE,
+						RK30_PIN3_PB4,
+						CONS(RK29_CAM_SENSOR_SP0718,_PWRDN_ACTIVE),
+						false,
+						CONS(RK29_CAM_SENSOR_SP0718,_FULL_RESOLUTION),
+						0,
+						3,
+						100000,
+						CONS(RK29_CAM_SENSOR_SP0718,_I2C_ADDR),
+						0,
+						24),
+#endif
+                        
     new_camera_device_end
 };
 /*---------------- Camera Sensor Macro Define Begin  ------------------------*/
@@ -110,7 +149,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #define CONFIG_SENSOR_01  RK29_CAM_SENSOR_SP2518                   /* back camera sensor 1 */
 #define CONFIG_SENSOR_IIC_ADDR_01 	    0x00
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_01    3
-#define CONFIG_SENSOR_ORIENTATION_01       90
+#define CONFIG_SENSOR_ORIENTATION_01       270
 #define CONFIG_SENSOR_POWER_PIN_01         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_01         INVALID_GPIO
 #define CONFIG_SENSOR_POWERDN_PIN_01       RK30_PIN3_PB5
