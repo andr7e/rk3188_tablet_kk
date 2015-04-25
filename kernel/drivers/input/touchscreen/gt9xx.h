@@ -34,7 +34,6 @@
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <mach/gpio.h>
-#include <mach/yfmach.h>
 #include <linux/earlysuspend.h>
 
 struct goodix_ts_data {

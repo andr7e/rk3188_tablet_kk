@@ -3,29 +3,26 @@
 
 #include <linux/delay.h>
 #include <mach/gpio.h>
-//#include <mach/yfmach.h>
 #include "../transmitter/mipi_dsi.h"
 
-//extern int lcd_supported(char * name);
-
 #define OUT_TYPE        SCREEN_RGB
-#define OUT_FACE        OUT_D888_P666 //OUT_P888
+#define OUT_FACE        OUT_D888_P666
 
-#define OUT_CLK         65000000  //66666666
-#define LCDC_ACLK       300000000 //500000000
+#define OUT_CLK         65000000
+#define LCDC_ACLK       300000000
 /* Timing */
-#define H_PW            64 // 32
-#define H_BP            56 // 80
-#define H_VD            768 //env_get_u32("lcd_h_vd", 1280)
+#define H_PW            64
+#define H_BP            56
+#define H_VD            768
 #define H_FP            60
 
-#define V_PW            50 //6
-#define V_BP            30 //14
-#define V_VD            1024 //env_get_u32("lcd_v_vd", 800)
-#define V_FP            36 //3
+#define V_PW            50
+#define V_BP            30
+#define V_VD            1024
+#define V_FP            36
 
-#define LCD_WIDTH       119 //320
-#define LCD_HEIGHT      159 //180
+#define LCD_WIDTH       119
+#define LCD_HEIGHT      159
 
 #define DCLK_POL        1
 #define SWAP_RB         0
@@ -164,8 +161,8 @@ int rk_lcd_standby(u8 enable) {
 
 static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 {
-	int rk610   = 0; //lcd_supported("rk61x");
-	int ssd2828 = 1; //lcd_supported("ssd2828");
+	int rk610   = 0;
+	int ssd2828 = 1;
 	
 	/* screen type & face */
 	screen->type = rk610 ? SCREEN_LVDS: OUT_TYPE;

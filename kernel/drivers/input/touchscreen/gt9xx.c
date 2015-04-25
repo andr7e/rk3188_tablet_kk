@@ -28,10 +28,8 @@
 #if GTP_ICS_SLOT_REPORT
     #include <linux/input/mt.h>
 #endif
-static  s32 last_x[GTP_MAX_TOUCH]={0};
-static  s32 last_y[GTP_MAX_TOUCH]={0};
 
-static const char *goodix_ts_name = "gt80x";
+static const char *goodix_ts_name = "goodix_ts_gt9xx";
 static struct workqueue_struct *goodix_wq;
 static struct i2c_client * i2c_connect_client = NULL; 
 static u8 config[GTP_CONFIG_MAX_LENGTH + GTP_ADDR_LENGTH]
@@ -283,17 +281,14 @@ Input:
 Output:
 	None.
 *******************************************************/
-static void gtp_touch_up(struct goodix_ts_data* ts, s32 id,s32 x,s32 y)
+static void gtp_touch_up(struct goodix_ts_data* ts, s32 id)
 {
 #if GTP_ICS_SLOT_REPORT
     input_mt_slot(ts->input_dev, id);
     input_report_abs(ts->input_dev, ABS_MT_TRACKING_ID, -1);
-    //input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
-    //input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
+    
     GTP_DEBUG("Touch id[%2d] release!", id);
 #else
-    //input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
-    //input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
     input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, 0);
     input_report_abs(ts->input_dev, ABS_MT_WIDTH_MAJOR, 0);
     input_mt_sync(ts->input_dev);
@@ -401,8 +396,6 @@ static void goodix_ts_work_func(struct work_struct *work)
                 input_x  = coor_data[pos + 1] | coor_data[pos + 2] << 8;
                 input_y  = coor_data[pos + 3] | coor_data[pos + 4] << 8;
                 input_w  = coor_data[pos + 5] | coor_data[pos + 6] << 8;
-                last_x[i]=input_x;
-                last_y[i]=input_y;
 
                 gtp_touch_down(ts, id, input_x, input_y, input_w);
                 pre_touch |= 0x01 << i;
@@ -413,8 +406,6 @@ static void goodix_ts_work_func(struct work_struct *work)
             }
             else// if (pre_touch & (0x01 << i))
             {
-                input_x=last_x[i];
-                input_y=last_y[i];
                 gtp_touch_up(ts, id,input_x,input_y);
                 pre_touch &= ~(0x01 << i);
             }
@@ -432,9 +423,6 @@ static void goodix_ts_work_func(struct work_struct *work)
             input_x  = coor_data[1] | coor_data[2] << 8;
             input_y  = coor_data[3] | coor_data[4] << 8;
             input_w  = coor_data[5] | coor_data[6] << 8;
-			
-            last_x[i]=input_x;
-            last_y[i]=input_y;
 
             gtp_touch_down(ts, id, input_x, input_y, input_w);
         }
@@ -442,10 +430,8 @@ static void goodix_ts_work_func(struct work_struct *work)
     else if (pre_touch)
     {
         GTP_DEBUG("Touch Release!");
-        input_x=last_x[i];
-        input_y=last_y[i];
 		
-        gtp_touch_up(ts, 0,input_x,input_y);
+        gtp_touch_up(ts, 0);
     }
 
     pre_touch = touch_num;
