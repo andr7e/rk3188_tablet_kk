@@ -2139,9 +2139,13 @@ static void __init rk30_i2c_register_board_info(void)
 //end of i2c
 
 #define POWER_ON_PIN RK30_PIN0_PA0   //power_hold
+#define GPIO_5V_DRV  RK30_PIN0_PA3   //5v for otg host && hdmi
 static void rk30_pm_power_off(void)
 {
 	printk(KERN_ERR "rk30_pm_power_off start...\n");
+	
+	//gpio_direction_output(GPIO_5V_DRV, GPIO_LOW);
+	
 #if defined(CONFIG_MFD_WM831X)
 	wm831x_set_bits(Wm831x,WM831X_GPIO_LEVEL,0x0001,0x0000);  //set sys_pwr 0
 	wm831x_device_shutdown(Wm831x);//wm8326 shutdown
@@ -2172,6 +2176,9 @@ static void __init machine_rk30_board_init(void)
 	//avs_init();
 	gpio_request(POWER_ON_PIN, "poweronpin");
 	gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
+	
+	//gpio_request(GPIO_5V_DRV, "5vdrv");
+	//gpio_direction_output(GPIO_5V_DRV, GPIO_HIGH);
 	
 	pm_power_off = rk30_pm_power_off;
 	
