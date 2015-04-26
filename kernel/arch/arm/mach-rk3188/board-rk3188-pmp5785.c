@@ -1526,7 +1526,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.type = "bma222",
 		.addr = 0x18,
 		.flags	= 0,
-		.irq	= RK30_PIN3_PD7,
+		.irq	= RK30_PIN0_PB7,
 	},
 #endif
 
