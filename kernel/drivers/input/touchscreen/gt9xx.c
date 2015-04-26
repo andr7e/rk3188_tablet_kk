@@ -29,7 +29,7 @@
     #include <linux/input/mt.h>
 #endif
 
-static const char *goodix_ts_name = "goodix_ts_gt9xx";
+static const char *goodix_ts_name = "gt80x";
 static struct workqueue_struct *goodix_wq;
 static struct i2c_client * i2c_connect_client = NULL; 
 static u8 config[GTP_CONFIG_MAX_LENGTH + GTP_ADDR_LENGTH]
@@ -406,7 +406,7 @@ static void goodix_ts_work_func(struct work_struct *work)
             }
             else// if (pre_touch & (0x01 << i))
             {
-                gtp_touch_up(ts, id,input_x,input_y);
+                gtp_touch_up(ts, id);
                 pre_touch &= ~(0x01 << i);
             }
         }
