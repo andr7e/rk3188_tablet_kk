@@ -2084,16 +2084,35 @@ static int bma222_read_accel_z(struct i2c_client *client, short *a_z)
 
 static void bma222_work_func(struct work_struct *work)
 {
+	s32	x,y,z;
+	
 	struct bma222_data *bma222 = container_of((struct delayed_work *)work,
 			struct bma222_data, work);
+			
 	static struct bma222acc acc;
+	
 	unsigned long delay = msecs_to_jiffies(atomic_read(&bma222->delay));
+	
+	struct sensor_platform_data *pdata = pdata = (bma222->bma222_client)->dev.platform_data;
 
 	bma222_read_accel_xyz(bma222->bma222_client, &acc);
+	
+	/*
 	input_report_abs(bma222->input, ABS_X, acc.x);
 	input_report_abs(bma222->input, ABS_Y, -acc.y);	//wh 1226
 	input_report_abs(bma222->input, ABS_Z, -acc.z);
+	*/
+
+	x = (pdata->orientation[0])*acc.x + (pdata->orientation[1])*acc.y + (pdata->orientation[2])*acc.z;
+	y = (pdata->orientation[3])*acc.x + (pdata->orientation[4])*acc.y + (pdata->orientation[5])*acc.z;
+	z = (pdata->orientation[6])*acc.x + (pdata->orientation[7])*acc.y + (pdata->orientation[8])*acc.z;
+	
+	input_report_abs(bma222->input, ABS_X, x);
+	input_report_abs(bma222->input, ABS_Y, y);
+	input_report_abs(bma222->input, ABS_Z, z); 
+	
 	input_sync(bma222->input);
+	
 	mutex_lock(&bma222->value_mutex);
 	bma222->value = acc;
 	mutex_unlock(&bma222->value_mutex);

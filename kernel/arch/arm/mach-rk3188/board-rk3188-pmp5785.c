@@ -291,8 +291,8 @@ static struct sensor_platform_data mma8452_info = {
 	.type = SENSOR_TYPE_ACCEL,
 	.irq_enable = 1,
 	.poll_delay_ms = 30,
-        .init_platform_hw = mma8452_init_platform_hw,
-        .orientation = {-1, 0, 0, 0, 0, -1, 0, 1, 0},
+    .init_platform_hw = mma8452_init_platform_hw,
+    .orientation = {-1, 0, 0, 0, 0, -1, 0, 1, 0},
 };
 #endif
 #if defined (CONFIG_GS_LIS3DH)
@@ -308,8 +308,26 @@ static struct sensor_platform_data lis3dh_info = {
 	.type = SENSOR_TYPE_ACCEL,
 	.irq_enable = 1,
 	.poll_delay_ms = 30,
-        .init_platform_hw = lis3dh_init_platform_hw,
+    .init_platform_hw = lis3dh_init_platform_hw,
 	.orientation = {-1, 0, 0, 0, 1, 0, 0, 0, -1},
+};
+#endif
+
+#if defined (CONFIG_GS_BMA222)
+#define BMA222_INT_PIN   RK30_PIN0_PB7
+
+static int bma222_init_platform_hw(void)
+{
+
+        return 0;
+}
+
+static struct sensor_platform_data bma222_info = {
+	.type = SENSOR_TYPE_ACCEL,
+	.irq_enable = 1,
+	.poll_delay_ms = 30,
+    .init_platform_hw = bma222_init_platform_hw,
+	.orientation = {0, 1, 0, 1, 0, 0, 0, 0, -1},
 };
 #endif
 
@@ -1523,10 +1541,11 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 
 #if defined (CONFIG_GS_BMA222)
 	{
-		.type = "bma222",
-		.addr = 0x18,
-		.flags	= 0,
-		.irq	= RK30_PIN0_PB7,
+		.type   	   = "bma222",
+		.addr   	   = 0x18,
+		.flags		   = 0,
+		.irq		   = BMA222_INT_PIN,
+		.platform_data = &bma222_info,
 	},
 #endif
 
