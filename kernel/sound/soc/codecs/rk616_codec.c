@@ -102,6 +102,8 @@ static struct rk616_codec_priv *rk616_priv = NULL;
 static struct mfd_rk616 *rk616_mfd = NULL;
 static bool rk616_for_mid = 1, is_hdmi_in = false;
 
+static int rk616_set_playback_path (struct snd_soc_codec *codec, long int playback_path, long int pre_path);
+
 bool rk616_get_for_mid(void)
 {
 	return rk616_for_mid;
@@ -760,6 +762,8 @@ static int rk616_codec_power_up(int type)
 		#else
 			codec_set_spk(!get_hdmi_state());
 		#endif
+		
+		rk616_set_playback_path (codec, rk616->playback_path, rk616->playback_path);
 	}
 
 	if (type & RK616_CODEC_CAPTURE) {
@@ -1387,8 +1391,15 @@ static int rk616_playback_path_put(struct snd_kcontrol *kcontrol,
 
 	if(get_hdmi_state())
 		return 0;
+		
+	return rk616_set_playback_path (codec, rk616->playback_path, pre_path);
+}
 
-	switch (rk616->playback_path) {
+static int rk616_set_playback_path (struct snd_soc_codec *codec, long int playback_path, long int pre_path)
+{
+	DBG("%s : playback_path = %ld\n",__func__, playback_path);
+	
+	switch (playback_path) {
 	case OFF:
 		if (pre_path != OFF)
 			rk616_codec_power_down(RK616_CODEC_PLAYBACK);
