@@ -763,7 +763,7 @@ static int rk616_codec_power_up(int type)
 			codec_set_spk(!get_hdmi_state());
 		#endif
 		
-		rk616_set_playback_path (codec, rk616->playback_path, rk616->playback_path);
+		rk616_set_playback_path (codec, SPK_HP, rk616->playback_path);
 	}
 
 	if (type & RK616_CODEC_CAPTURE) {
