@@ -69,7 +69,7 @@ extern u16 total_len;
 #define GTP_CHANGE_X2Y        1
 #define GTP_ESD_PROTECT       0
 #define GTP_CREATE_WR_NODE    1
-#define GTP_ICS_SLOT_REPORT   0
+#define GTP_ICS_SLOT_REPORT   1 //0
 
 #define GUP_USE_HEADER_FILE   0
 

@@ -253,12 +253,21 @@ static void gtp_touch_down(struct goodix_ts_data* ts,s32 id,s32 x,s32 y,s32 w)
 #endif
 
 #if GTP_ICS_SLOT_REPORT
+/*
     input_mt_slot(ts->input_dev, id);
     input_report_abs(ts->input_dev, ABS_MT_TRACKING_ID, id);
     input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
     input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
     input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, w);
     input_report_abs(ts->input_dev, ABS_MT_WIDTH_MAJOR, w);
+*/ 
+	input_mt_slot(ts->input_dev, id);
+	input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, true);
+	input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
+	input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
+	input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, w);
+	input_report_abs(ts->input_dev, ABS_MT_WIDTH_MAJOR, w);
+	
 #else
     input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
     input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
@@ -270,6 +279,7 @@ static void gtp_touch_down(struct goodix_ts_data* ts,s32 id,s32 x,s32 y,s32 w)
 
     GTP_DEBUG("ID:%d, X:%d, Y:%d, W:%d", id, x, y, w);
 }
+
 
 /*******************************************************
 Function:
@@ -284,16 +294,25 @@ Output:
 static void gtp_touch_up(struct goodix_ts_data* ts, s32 id)
 {
 #if GTP_ICS_SLOT_REPORT
+/*
     input_mt_slot(ts->input_dev, id);
     input_report_abs(ts->input_dev, ABS_MT_TRACKING_ID, -1);
-    
+    //input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
+    //input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
+*/ 
+	input_mt_slot(ts->input_dev, id);
+	input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, false);
+
     GTP_DEBUG("Touch id[%2d] release!", id);
 #else
+    //input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
+    //input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
     input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, 0);
     input_report_abs(ts->input_dev, ABS_MT_WIDTH_MAJOR, 0);
     input_mt_sync(ts->input_dev);
 #endif
 }
+
 
 /*******************************************************
 Function:
@@ -406,7 +425,7 @@ static void goodix_ts_work_func(struct work_struct *work)
             }
             else// if (pre_touch & (0x01 << i))
             {
-                gtp_touch_up(ts, id);
+                gtp_touch_up(ts, i);
                 pre_touch &= ~(0x01 << i);
             }
         }
@@ -940,6 +959,7 @@ static s8 gtp_request_input_dev(struct goodix_ts_data *ts)
 
     ts->input_dev->evbit[0] = BIT_MASK(EV_SYN) | BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS) ;
 #if GTP_ICS_SLOT_REPORT
+	set_bit(BTN_TOOL_FINGER, ts->input_dev->keybit);
     __set_bit(INPUT_PROP_DIRECT, ts->input_dev->propbit);
     input_mt_init_slots(ts->input_dev, 255);
 #else
@@ -1168,7 +1188,7 @@ Output:
 static void goodix_ts_early_suspend(struct early_suspend *h)
 {
     struct goodix_ts_data *ts;
-    s8 ret = -1;	
+    s8 ret = -1, i = 0;	
     ts = container_of(h, struct goodix_ts_data, early_suspend);
 	
     GTP_DEBUG_FUNC();
@@ -1186,13 +1206,18 @@ static void goodix_ts_early_suspend(struct early_suspend *h)
     {
         hrtimer_cancel(&ts->timer);
     }
+    
+    for (i = 0; i < GTP_MAX_TOUCH; i++)
+		gtp_touch_up(ts, i);
+	
+	input_sync(ts->input_dev);
+
     ret = gtp_enter_sleep(ts);
     if (ret < 0)
     {
         GTP_ERROR("GTP early suspend failed.");
     }
 }
-
 /*******************************************************
 Function:
 	Late resume function.
