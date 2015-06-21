@@ -6,23 +6,23 @@
 #include "../transmitter/mipi_dsi.h"
 
 #define OUT_TYPE        SCREEN_RGB
-#define OUT_FACE        OUT_D888_P666
+#define OUT_FACE        OUT_P888
 
 #define OUT_CLK         65000000
 #define LCDC_ACLK       300000000
 /* Timing */
-#define H_PW            64
-#define H_BP            56
-#define H_VD            768
-#define H_FP            60
+#define H_PW            20
+#define H_BP            15
+#define H_VD            1280
+#define H_FP            15
 
-#define V_PW            50
-#define V_BP            30
-#define V_VD            1024
-#define V_FP            36
+#define V_PW            6
+#define V_BP            3
+#define V_VD            800
+#define V_FP            3
 
-#define LCD_WIDTH       119
-#define LCD_HEIGHT      159
+#define LCD_WIDTH       196
+#define LCD_HEIGHT      147
 
 #define DCLK_POL        1
 #define SWAP_RB         0
@@ -161,8 +161,8 @@ int rk_lcd_standby(u8 enable) {
 
 static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 {
-	int rk610   = 0;
-	int ssd2828 = 1;
+	int rk610   = 1;
+	int ssd2828 = 0;
 	
 	/* screen type & face */
 	screen->type = rk610 ? SCREEN_LVDS: OUT_TYPE;
@@ -223,7 +223,7 @@ static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info
 	}
 #ifdef CONFIG_RK616_MIPI_DSI
 	else if(screen->type == SCREEN_MIPI) {
-		screen->dsi_lane  = 4;
+		screen->dsi_lane = 4;
 		screen->hs_tx_clk = 528*1000000;
 		screen->init = rk_lcd_init;
 		screen->standby = rk_lcd_standby;
