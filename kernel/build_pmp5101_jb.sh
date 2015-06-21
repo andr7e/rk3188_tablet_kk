@@ -16,5 +16,5 @@ make -j2 zImage
 ./mkkrnlimg ./arch/arm/boot/zImage kernel.img
 
 zip -r out ./kernel.img
-mv ./out.zip ../kernel3.0.36+JB.zip
+mv ./out.zip ../pmp5101_kernel3.0.36+JB.zip
 
