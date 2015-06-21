@@ -71,6 +71,7 @@ obj-$(CONFIG_HDMI_FB_480P) += lcd_480p.o
 obj-$(CONFIG_HDMI_FB_720P) += lcd_720p.o
 obj-$(CONFIG_HDMI_FB_1080P) += lcd_1080p.o
 obj-$(CONFIG_LCD_PMP5785_MIPI) += lcd_pmp5785_1024x768_mipi.o
+obj-$(CONFIG_LCD_PMP5101_MIPI) += lcd_pmp5101_1280x800_mipi.o
 
 quiet_cmd_gen = GEN     $@
       cmd_gen = cmp -s $< $@ || cp $< $@

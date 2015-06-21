@@ -209,6 +209,9 @@ config HDMI_FB_1080P
 
 config LCD_PMP5785_MIPI
 	bool "mipi dsi lcd panel 1024X768 SSD2828 PMP5785"
+	
+config LCD_PMP5101_MIPI
+	bool "mipi dsi lcd panel 1280X800 RK616 PMP5101"
 
 endchoice
 
