@@ -167,7 +167,7 @@ static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info
 	/* screen type & face */
 	screen->type = rk610 ? SCREEN_LVDS: OUT_TYPE;
 	screen->face = OUT_FACE;
-	screen->lvds_format = LVDS_8BIT_2;
+	screen->lvds_format = LVDS_8BIT_1;
 
 	/* Screen size */
 	screen->x_res = H_VD;
