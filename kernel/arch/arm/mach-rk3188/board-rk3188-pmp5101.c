@@ -83,7 +83,7 @@
 #include <linux/power/cw2015_battery.h>
 #endif
 
-#include "board-rk3188-pmp5785-camera.c"
+#include "board-rk3188-pmp5101-camera.c"
 #include <plat/key.h>
 
 static struct rk29_keys_button key_button[] = {
