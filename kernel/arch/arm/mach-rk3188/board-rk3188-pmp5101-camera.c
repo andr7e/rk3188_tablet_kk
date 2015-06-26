@@ -52,7 +52,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #else
     new_camera_device_ex(RK29_CAM_SENSOR_SP2518,
 						back,
-						270,
+						0,
 						INVALID_VALUE,
 						INVALID_VALUE,
 						INVALID_VALUE,
@@ -103,7 +103,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #else
     new_camera_device_ex(RK29_CAM_SENSOR_SP0718,
 						front,
-						90,
+						0,
 						INVALID_VALUE,
 						INVALID_VALUE,
 						INVALID_VALUE,
