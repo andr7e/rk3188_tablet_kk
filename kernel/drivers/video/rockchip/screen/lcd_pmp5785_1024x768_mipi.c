@@ -5,11 +5,14 @@
 #include <mach/gpio.h>
 #include "../transmitter/mipi_dsi.h"
 
+// USE SSD2828_RGB2MIPI
+
 #define OUT_TYPE        SCREEN_RGB
 #define OUT_FACE        OUT_D888_P666
 
 #define OUT_CLK         65000000
 #define LCDC_ACLK       300000000
+
 /* Timing */
 #define H_PW            64
 #define H_BP            56
@@ -29,7 +32,7 @@
 #define SWAP_RG		0
 #define SWAP_GB		0
 
-#ifdef CONFIG_SSD2828_RGB2MIPI
+
 #define mipi_dsi_init(data) 				dsi_set_regs(data, ARRAY_SIZE(data))
 #define mipi_dsi_send_dcs_packet(data) 		dsi_send_dcs_packet(data, ARRAY_SIZE(data))
 #define mipi_dsi_post_init(data)			dsi_set_regs(data, ARRAY_SIZE(data))
@@ -69,10 +72,10 @@ static unsigned int post_initialize[] = {
 	0x00c00100,      //software reset ssd2828
 };
 
-static unsigned char mipi_exit_sleep_mode[] = {0x11};
-static unsigned char mipi_set_diaplay_on[] = {0x29};
+static unsigned char mipi_exit_sleep_mode[]  = {0x11};
+static unsigned char mipi_set_diaplay_on[]   = {0x29};
 static unsigned char mipi_enter_sleep_mode[] = {0x10};
-static unsigned char mipi_set_diaplay_off[] = {0x28};
+static unsigned char mipi_set_diaplay_off[]  = {0x28};
 
 int lcd_init(void)
 {
@@ -111,61 +114,13 @@ int lcd_standby(u8 enable)
 	}
     return 0;
 }
-#endif
 
-#ifdef CONFIG_RK616_MIPI_DSI
-int rk_lcd_init(void) {
-	u8 dcs[16] = {0};
-	if(dsi_is_active() != 1)
-		return -1;
-
-	dsi_enable_hs_clk(1);
-
-	dcs[0] = LPDT;
-	dcs[1] = dcs_exit_sleep_mode;
-	dsi_send_dcs_packet(dcs, 2);
-	msleep(1);
-	dcs[0] = LPDT;
-	dcs[1] = dcs_set_display_on;
-	dsi_send_dcs_packet(dcs, 2);
-	msleep(10);
-	//dsi_enable_command_mode(0);
-	dsi_enable_video_mode(1);
-	return 0;
-}
-
-int rk_lcd_standby(u8 enable) {
-
-	u8 dcs[16] = {0};
-	if(dsi_is_active() != 1)
-		return -1;
-
-	if(enable) {
-		/*below is changeable*/
-		dcs[0] = LPDT;
-		dcs[1] = dcs_set_display_off;
-		dsi_send_dcs_packet(dcs, 2);
-		msleep(1);
-		dcs[0] = LPDT;
-		dcs[1] = dcs_enter_sleep_mode;
-		dsi_send_dcs_packet(dcs, 2);
-		msleep(1);
-	} else {
-		rk_lcd_init();
-	}
-	return 0;
-}
-
-#endif
 #define RK_USE_SCREEN_ID
 
 static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 {
-	int rk610   = 0;
-	int ssd2828 = 1;
-	
 	/* screen type & face */
-	screen->type = rk610 ? SCREEN_LVDS: OUT_TYPE;
+	screen->type = OUT_TYPE;
 	screen->face = OUT_FACE;
 	screen->lvds_format = LVDS_8BIT_2;
 
@@ -199,41 +154,26 @@ static void set_lcd_info_by_id(struct rk29fb_screen *screen, struct rk29lcd_info
 	screen->swap_delta = 0;
 	screen->swap_dumy  = 0;
 
-	if(ssd2828) {
-#ifdef CONFIG_SSD2828_RGB2MIPI
-		int vpw, hpw, vbp, hbp, vfp, hfp;
-		screen->init = lcd_init;
-		screen->standby = lcd_standby;
-		if(lcd_info) {
-			gLcd_info = lcd_info;
-			gLcd_info->io_init();
-		}
-		vpw = screen->vsync_len;
-		hpw = screen->hsync_len;
-		vbp = screen->upper_margin;
-		hbp = screen->left_margin;
-		vfp = screen->lower_margin;
-		hfp = screen->right_margin;
-		pre_initialize[0] = 0x00B10000 | ((vpw & 0Xff) << 8) | (hpw & 0Xff);
-		pre_initialize[1] = 0x00B20000 | (((vbp+vpw) & 0Xff) << 8) | ((hbp+hpw) & 0Xff);
-		pre_initialize[2] = 0x00B30000 | ((vfp & 0Xff) << 8) | (hfp & 0Xff);
-		pre_initialize[3] = 0x00B40000 | screen->x_res;
-		pre_initialize[4] = 0x00B50000 | screen->y_res;
-#endif
+	int vpw, hpw, vbp, hbp, vfp, hfp;
+	
+	screen->init = lcd_init;
+	screen->standby = lcd_standby;
+	if(lcd_info) {
+		gLcd_info = lcd_info;
+		gLcd_info->io_init();
 	}
-#ifdef CONFIG_RK616_MIPI_DSI
-	else if(screen->type == SCREEN_MIPI) {
-		screen->dsi_lane  = 4;
-		screen->hs_tx_clk = 528*1000000;
-		screen->init = rk_lcd_init;
-		screen->standby = rk_lcd_standby;
-		if(lcd_info)
-			gLcd_info = lcd_info;
-	}
-#endif
-	else {
-		screen->init = NULL;
-		screen->standby = NULL;
-	}
+	
+	vpw = screen->vsync_len;
+	hpw = screen->hsync_len;
+	vbp = screen->upper_margin;
+	hbp = screen->left_margin;
+	vfp = screen->lower_margin;
+	hfp = screen->right_margin;
+	
+	pre_initialize[0] = 0x00B10000 | ((vpw & 0Xff) << 8) | (hpw & 0Xff);
+	pre_initialize[1] = 0x00B20000 | (((vbp+vpw) & 0Xff) << 8) | ((hbp+hpw) & 0Xff);
+	pre_initialize[2] = 0x00B30000 | ((vfp & 0Xff) << 8) | (hfp & 0Xff);
+	pre_initialize[3] = 0x00B40000 | screen->x_res;
+	pre_initialize[4] = 0x00B50000 | screen->y_res;
 }
 #endif
