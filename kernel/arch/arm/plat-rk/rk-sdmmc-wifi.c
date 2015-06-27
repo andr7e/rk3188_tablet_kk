@@ -481,7 +481,7 @@ int __init rk29sdk_power_off()
 {
 	rk29sdk_wab_power(0);
 }
-//arch_initcall(rk29sdk_power_off);
+arch_initcall(rk29sdk_power_off);
 #endif
 EXPORT_SYMBOL(rk29sdk_wifi_power);
 
