@@ -460,18 +460,15 @@ void act8846_device_suspend(void)
 	vdd_core_vol = regulator_get_voltage(dcdc);
 	regulator_set_voltage(dcdc, 900000, 900000);
 	udelay(100);
-
+/*
 	dcdc =regulator_get(NULL, "act_dcdc4");
-	
-#ifdef	CONFIG_MACH_RK3188_PMP5785
-	regulator_set_voltage(dcdc, 3300000, 3300000);
-#else
-	regulator_set_voltage(dcdc, 3000000, 3000000);
-#endif
-
+	regulator_set_voltage(dcdc, 2800000, 2800000);
 	regulator_put(dcdc);
 	udelay(100);
-
+*/
+	dcdc =regulator_get(NULL, "act_ldo5");
+	regulator_force_disable(dcdc);
+	regulator_put(dcdc);
 	#endif
 }
 
@@ -480,6 +477,10 @@ void act8846_device_resume(void)
 	struct regulator *dcdc;
 	#ifdef CONFIG_ACT8846_SUPPORT_RESET
 
+	dcdc =regulator_get(NULL, "act_ldo5");
+	regulator_enable(dcdc);
+	regulator_put(dcdc);
+
 	dcdc =dvfs_get_regulator( "vdd_cpu");
 	regulator_set_voltage(dcdc, vdd_cpu_vol, vdd_cpu_vol);
 	udelay(100);
@@ -487,18 +488,12 @@ void act8846_device_resume(void)
 	dcdc =dvfs_get_regulator( "vdd_core");
 	regulator_set_voltage(dcdc, vdd_core_vol, vdd_core_vol);
 	udelay(100);
-
+/*
 	dcdc =regulator_get(NULL, "act_dcdc4");
-	
-#ifdef	CONFIG_MACH_RK3188_PMP5785
-	regulator_set_voltage(dcdc, 3300000, 3300000);
-#else
 	regulator_set_voltage(dcdc, 3000000, 3000000);
-#endif
-
 	regulator_put(dcdc);
 	udelay(100);
-	
+*/
 	sram_gpio_set_value(pmic_vsel, GPIO_HIGH);  
 	
 	#endif

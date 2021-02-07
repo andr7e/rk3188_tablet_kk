@@ -1650,10 +1650,10 @@ static struct pmu_info  act8846_dcdc_info[] = {
 	},
 	{
 		.name          = "act_dcdc4",   //vccio
-		.min_uv          = 3300000,
-		.max_uv         = 3300000,
+		.min_uv          = 3000000,
+		.max_uv         = 3000000,
 		#ifdef CONFIG_ACT8846_SUPPORT_RESET
-		.suspend_vol  =  3300000,
+		.suspend_vol  =  3000000,
 		#else
 		.suspend_vol  =  2800000,
 		#endif
@@ -2159,11 +2159,23 @@ static void __init rk30_i2c_register_board_info(void)
 
 #define POWER_ON_PIN RK30_PIN0_PA0   //power_hold
 #define GPIO_5V_DRV  RK30_PIN0_PA3   //5v for otg host && hdmi
+
+static void rk30_pm_restart(char mode, const char *cmd)
+{
+	printk(KERN_ERR "rk30_pm_restart start...\n");
+	gpio_direction_output(LCD_EN_PIN, !LCD_EN_VALUE);
+
+	arm_machine_restart(mode, cmd);
+}
+
 static void rk30_pm_power_off(void)
 {
 	printk(KERN_ERR "rk30_pm_power_off start...\n");
 	
-	//gpio_direction_output(GPIO_5V_DRV, GPIO_LOW);
+	gpio_direction_output(GPIO_5V_DRV, GPIO_LOW);
+
+	gpio_request(LCD_EN_PIN, NULL);
+	gpio_direction_output(LCD_EN_PIN, !LCD_EN_VALUE);
 	
 #if defined(CONFIG_MFD_WM831X)
 	wm831x_set_bits(Wm831x,WM831X_GPIO_LEVEL,0x0001,0x0000);  //set sys_pwr 0
@@ -2196,10 +2208,11 @@ static void __init machine_rk30_board_init(void)
 	gpio_request(POWER_ON_PIN, "poweronpin");
 	gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
 	
-	//gpio_request(GPIO_5V_DRV, "5vdrv");
-	//gpio_direction_output(GPIO_5V_DRV, GPIO_HIGH);
+	gpio_request(GPIO_5V_DRV, "5vdrv");
+	gpio_direction_output(GPIO_5V_DRV, GPIO_HIGH);
 	
 	pm_power_off = rk30_pm_power_off;
+	arm_pm_restart = rk30_pm_restart;
 	
     gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
     
@@ -2353,6 +2366,8 @@ static struct cpufreq_frequency_table dvfs_gpu_table_volt_level1[] = {
 #define dvfs_gpu_table dvfs_gpu_table_volt_level1
 
 /******************************** ddr dvfs frequency volt table **********************************/
+
+/*
 static struct cpufreq_frequency_table dvfs_ddr_table_volt_level0[] = {
 	{.frequency = 200 * 1000 + DDR_FREQ_SUSPEND,    .index = 950 * 1000},
 	{.frequency = 300 * 1000 + DDR_FREQ_VIDEO,      .index = 1000 * 1000},
@@ -2360,6 +2375,15 @@ static struct cpufreq_frequency_table dvfs_ddr_table_volt_level0[] = {
 	{.frequency = 460 * 1000 + DDR_FREQ_DUALVIEW,   .index = 1150 * 1000},
 	//{.frequency = 433 * 1000 + DDR_FREQ_NORMAL,     .index = 1150 * 1000},
 	//{.frequency = 528 * 1000 + DDR_FREQ_NORMAL,     .index = 1200 * 1000},
+	{.frequency = CPUFREQ_TABLE_END},
+};*/
+
+static struct cpufreq_frequency_table dvfs_ddr_table_volt_level0[] = {
+	{.frequency = 200 * 1000 + DDR_FREQ_SUSPEND,    .index = 950 * 1000},
+	//{.frequency = 384 * 1000 + DDR_FREQ_VIDEO,      .index = 1100 * 1000},
+	{.frequency = 396 * 1000 + DDR_FREQ_NORMAL,     .index = 1100 * 1000},
+	{.frequency = 528 * 1000 + DDR_FREQ_NORMAL,     .index = 1200 * 1000},
+	{.frequency = 528 * 1000,     .index = 1200 * 1000},
 	{.frequency = CPUFREQ_TABLE_END},
 };
 
